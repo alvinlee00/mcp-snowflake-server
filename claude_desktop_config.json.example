@@ -1,0 +1,24 @@
+{
+  "mcpServers": {
+    "snowflake-optimizer": {
+      "command": "python",
+      "args": ["/path/to/your/mcp-snowflake-server/src/server.py"],
+      "env": {
+        "SNOWFLAKE_ACCOUNT": "your-account.snowflakecomputing.com",
+        "SNOWFLAKE_USER": "your-username",
+        "SNOWFLAKE_WAREHOUSE": "your-warehouse",
+        "SNOWFLAKE_ROLE": "ACCOUNTADMIN",
+        "SNOWFLAKE_CREDIT_PRICE": "4.00",
+        
+        "_comment": "Choose ONE authentication method below:",
+        
+        "_password_auth": "Method 1: Password Authentication (less secure)",
+        "SNOWFLAKE_PASSWORD": "your-password",
+        
+        "_rsa_auth": "Method 2: RSA Key Authentication (recommended)",
+        "_SNOWFLAKE_PRIVATE_KEY_PATH": "/path/to/your/rsa_key.p8",
+        "_SNOWFLAKE_PRIVATE_KEY_PASSPHRASE": "your-key-passphrase"
+      }
+    }
+  }
+}

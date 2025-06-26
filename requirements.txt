@@ -1,0 +1,6 @@
+mcp>=1.4.0
+snowflake-connector-python>=3.8.0
+python-dotenv>=1.0.0
+pandas>=2.0.0
+fastmcp>=2.0.0
+cryptography>=41.0.0
