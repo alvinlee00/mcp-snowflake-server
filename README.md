@@ -1,8 +1,20 @@
-# MCP Snowflake Optimization Server
+# MCP Snowflake Account Intelligence Server
 
-A Model Context Protocol (MCP) server that provides intelligent Snowflake optimization tools for cost reduction, performance monitoring, and usage analysis.
+A Model Context Protocol (MCP) server that provides comprehensive Snowflake account analysis through flexible query tools and intelligent insights. Execute custom queries, monitor security, optimize costs, and analyze performance - all through natural language interactions.
 
 ## Features
+
+### 🔍 Generic Query Capabilities (NEW)
+- **Execute Custom Queries**: Run any SELECT query against ACCOUNT_USAGE with AI interpretation
+- **Schema Explorer**: Discover available tables and columns in ACCOUNT_USAGE
+- **Query Builder Assistant**: Get help building queries from natural language
+- **Smart Result Interpretation**: AI analyzes results and suggests next steps
+
+### 🔐 Security & Access Monitoring (NEW)
+- **Authentication Analysis**: Track RSA vs password usage across users
+- **Privilege Auditing**: Monitor role grants and permission changes
+- **Anomaly Detection**: Identify unusual access patterns and potential threats
+- **Compliance Reporting**: Security-focused analysis for audits
 
 ### 🚀 Performance Analysis
 - **Slow Query Detection**: Find and analyze your slowest queries
@@ -119,6 +131,16 @@ Restart Claude Desktop to load the server.
 
 ## Available Tools
 
+### Generic Query Tools (NEW)
+- `execute_query(query, limit=1000, interpret=True)` - Execute any SELECT query with AI interpretation
+- `explore_schema(table_pattern=None, show_columns=False)` - Explore ACCOUNT_USAGE tables and columns
+- `help_build_query(description)` - Get help building queries from natural language
+
+### Security Tools (NEW)
+- `check_user_authentication(users=None, days_back=30)` - Analyze RSA vs password authentication
+- `audit_privileges(days_back=7, role_filter=None)` - Track privilege and role changes
+- `detect_anomalies(days_back=7, sensitivity="medium")` - Detect unusual access patterns
+
 ### Performance Tools
 - `find_slow_queries(hours_back=24, limit=50)` - Find slowest queries
 - `analyze_repeated_queries(hours_back=168, limit=50)` - Identify repeated expensive patterns
@@ -137,23 +159,49 @@ Restart Claude Desktop to load the server.
 
 ## Available Prompts
 
-Use these prompts in Claude Desktop for guided optimization:
+Use these prompts in Claude Desktop for guided workflows:
 
 - **"optimize_snowflake_costs"** - Complete cost optimization workflow
 - **"find_performance_bottlenecks"** - Performance analysis workflow  
 - **"weekly_optimization_review"** - Generate weekly optimization report
+- **"security_audit"** - Comprehensive security analysis (NEW)
+- **"custom_analysis"** - Interactive query building assistance (NEW)
 
 ## Example Usage
 
-### In Claude Desktop:
+### Generic Query Execution (NEW):
+
+```
+Execute this query: SELECT COUNT(*) FROM LOGIN_HISTORY WHERE FIRST_AUTHENTICATION_FACTOR = 'PASSWORD'
+```
+
+```
+Show me all tables in ACCOUNT_USAGE that contain user activity data
+```
+
+```
+Help me build a query to find users who haven't logged in for 30 days
+```
+
+### Security Analysis (NEW):
+
+```
+Check if these users are using both RSA and password: ['USER1', 'USER2', 'USER3']
+```
+
+```
+Audit privilege changes for the ACCOUNTADMIN role in the last week
+```
+
+```
+Detect any unusual access patterns with high sensitivity
+```
+
+### Cost & Performance:
 
 ```
 Can you help me optimize my Snowflake costs?
 ```
-
-Claude will use the "optimize_snowflake_costs" prompt to run multiple analyses and provide recommendations.
-
-### Individual Tool Usage:
 
 ```
 Use the find_slow_queries tool to show me queries from the last 48 hours
