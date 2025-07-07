@@ -1,18 +1,38 @@
 #!/usr/bin/env python3
 """
-MCP Snowflake Optimization Server
+MCP Snowflake Account Intelligence Server
 
-This server provides tools for analyzing and optimizing Snowflake usage,
-including performance monitoring, cost analysis, and optimization recommendations.
+This server provides comprehensive tools for Snowflake account analysis including:
+- Generic query execution against ACCOUNT_USAGE schema
+- Security and access monitoring
+- Performance analysis and optimization
+- Cost tracking and recommendations
 """
 
 import asyncio
 import sys
 import os
+from typing import List
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from fastmcp import FastMCP
+
+# Import generic tools
+from tools.generic import (
+    execute_account_usage_query,
+    explore_account_usage_schema,
+    build_query_from_description
+)
+
+# Import security tools
+from tools.security import (
+    analyze_user_authentication,
+    audit_privilege_changes,
+    detect_unusual_access_patterns
+)
+
+# Import existing tools
 from tools.performance import (
     analyze_slow_queries,
     analyze_query_patterns,
@@ -31,7 +51,7 @@ from tools.monitoring import (
 )
 
 # Initialize FastMCP server
-mcp = FastMCP("Snowflake Optimizer")
+mcp = FastMCP("Snowflake Account Intelligence")
 
 # Performance Analysis Tools
 @mcp.tool()
@@ -170,6 +190,105 @@ def optimization_report(days_back: int = 7) -> str:
     """
     return generate_optimization_report(days_back)
 
+# Generic Query Tools
+@mcp.tool()
+def execute_query(query: str, limit: int = 1000, interpret: bool = True) -> str:
+    """
+    Execute any SELECT query against SNOWFLAKE.ACCOUNT_USAGE schema.
+    
+    The AI will help interpret results and suggest optimizations.
+    Safety features: automatic LIMIT, timeout, read-only validation.
+    
+    Args:
+        query: SQL SELECT query to execute
+        limit: Maximum rows to return (default: 1000)
+        interpret: Whether to provide AI interpretation (default: True)
+    
+    Returns:
+        Query results with interpretation and suggestions
+    """
+    return execute_account_usage_query(query, limit, interpret)
+
+@mcp.tool()
+def explore_schema(table_pattern: str = None, show_columns: bool = False) -> str:
+    """
+    Explore available tables and columns in ACCOUNT_USAGE schema.
+    
+    Helps discover what data is available for analysis.
+    
+    Args:
+        table_pattern: Optional pattern to filter tables (e.g., '%HISTORY%')
+        show_columns: Whether to show column details (default: False)
+    
+    Returns:
+        List of tables with descriptions and optionally columns
+    """
+    return explore_account_usage_schema(table_pattern, show_columns)
+
+@mcp.tool()
+def help_build_query(description: str) -> str:
+    """
+    Get help building a query from natural language description.
+    
+    Provides query templates and suggestions based on your request.
+    
+    Args:
+        description: Natural language description of what you want to query
+    
+    Returns:
+        Suggested queries with explanations
+    """
+    return build_query_from_description(description)
+
+# Security and Access Tools
+@mcp.tool()
+def check_user_authentication(users: List[str] = None, days_back: int = 30) -> str:
+    """
+    Analyze authentication methods (RSA vs password) for specified users.
+    
+    Perfect for security audits and identifying users who haven't migrated to RSA.
+    
+    Args:
+        users: List of usernames to check (None for all users)
+        days_back: Number of days to look back (default: 30)
+    
+    Returns:
+        Authentication analysis with security recommendations
+    """
+    return analyze_user_authentication(users, days_back)
+
+@mcp.tool()
+def audit_privileges(days_back: int = 7, role_filter: str = None) -> str:
+    """
+    Track privilege and role changes in your account.
+    
+    Identifies privilege escalations and security concerns.
+    
+    Args:
+        days_back: Number of days to look back (default: 7)
+        role_filter: Optional role to filter (e.g., 'ACCOUNTADMIN')
+    
+    Returns:
+        Privilege change audit with security analysis
+    """
+    return audit_privilege_changes(days_back, role_filter)
+
+@mcp.tool()
+def detect_anomalies(days_back: int = 7, sensitivity: str = "medium") -> str:
+    """
+    Detect unusual data access patterns that might indicate security issues.
+    
+    Uses behavioral analysis to identify anomalies.
+    
+    Args:
+        days_back: Number of days to look back (default: 7)
+        sensitivity: Detection level - 'low', 'medium', 'high' (default: 'medium')
+    
+    Returns:
+        Anomaly detection report with risk assessment
+    """
+    return detect_unusual_access_patterns(days_back, sensitivity)
+
 # Add some helpful prompts
 @mcp.prompt()
 def optimize_snowflake_costs() -> str:
@@ -220,6 +339,37 @@ def weekly_optimization_review() -> str:
 {optimization_report}
 
 This report provides an executive summary of your Snowflake usage with actionable recommendations for cost and performance optimization."""
+
+@mcp.prompt()
+def security_audit() -> str:
+    """
+    Perform a comprehensive security audit of your Snowflake account.
+    """
+    return """I'll perform a security audit of your Snowflake account:
+
+1. Check user authentication methods:
+   {check_user_authentication}
+
+2. Audit recent privilege changes:
+   {audit_privileges}
+
+3. Detect unusual access patterns:
+   {detect_anomalies}
+
+Based on these findings, I'll provide security recommendations and identify potential risks."""
+
+@mcp.prompt()
+def custom_analysis() -> str:
+    """
+    Help me write and execute custom queries against ACCOUNT_USAGE schema.
+    """
+    return """I can help you analyze any aspect of your Snowflake account. 
+
+First, let me show you what data is available:
+{explore_schema}
+
+Then I can help you build and execute custom queries based on your specific needs. 
+Just describe what you want to analyze and I'll help create the appropriate query."""
 
 if __name__ == "__main__":
     # Run the MCP server
