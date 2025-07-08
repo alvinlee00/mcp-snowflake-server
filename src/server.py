@@ -190,6 +190,56 @@ def optimization_report(days_back: int = 7) -> str:
     """
     return generate_optimization_report(days_back)
 
+# Account Management Tools
+@mcp.tool()
+def select_snowflake_account(account_identifier: str, user: str = None, warehouse: str = None, role: str = None) -> str:
+    """
+    Select which Snowflake account to connect to dynamically.
+    
+    This allows switching between different Snowflake accounts during the session.
+    The function will test the connection and return success or failure status.
+    
+    Args:
+        account_identifier: Snowflake account identifier (e.g., "myaccount.us-east-1.snowflakecomputing.com")
+        user: Username for the account (optional, uses env var if not provided)
+        warehouse: Warehouse to use (optional, defaults to COMPUTE_WH if not in env)
+        role: Role to use (optional, defaults to ACCOUNTADMIN)
+    
+    Returns:
+        Connection status message indicating success or failure
+    """
+    from utils.snowflake_connection import snowflake_conn
+    
+    try:
+        # Set the new connection parameters
+        result = snowflake_conn.set_account_parameters(
+            account=account_identifier,
+            user=user,
+            warehouse=warehouse,
+            role=role
+        )
+        
+        # Test the connection
+        if snowflake_conn.test_connection():
+            return f"✅ Successfully connected to Snowflake account: {account_identifier}"
+        else:
+            return f"❌ Failed to connect to Snowflake account: {account_identifier}"
+            
+    except Exception as e:
+        return f"❌ Failed to connect to Snowflake account: {account_identifier}. Error: {str(e)}"
+
+@mcp.tool()
+def get_current_account() -> str:
+    """
+    Get information about the currently connected Snowflake account.
+    
+    Returns:
+        Current account connection details
+    """
+    from utils.snowflake_connection import snowflake_conn
+    
+    return snowflake_conn.get_current_account_info()
+
 # Generic Query Tools
 @mcp.tool()
 def execute_query(query: str, limit: int = 1000, interpret: bool = True) -> str:
